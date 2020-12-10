@@ -1,9 +1,120 @@
 <!DOCTYPE html>
 <html>
-    <head>
-        <title>룰렛 게임</title>
-    </head>
-    <body>
-        룰렛 게임 만들기.
-    </body>
+
+<head>
+    <title>룰렛 게임</title>
+    <script type="text/javascript" src='js/Winwheel.js'></script>
+    <script type="text/javascript" src="js/TweenMax.min.js"></script>
+
+    <style>
+        #canvasContainer {
+            position: relative;
+            width: 300px;
+            margin: 50px;
+        }
+
+        #canvas {
+            z-index: 1;
+        }
+
+        #prizePointer {
+            width: 30px;
+            height: 40px;
+            position: absolute;
+            left: 730px;
+            top: 130px;
+            z-index: 999;
+        }
+    </style>
+</head>
+
+<body>
+
+    <div id="canvasContainer">
+        <img id="prizePointer" src="img/arrow.PNG"
+            style="position: absolute; top: 0%; left: 50%; transform: translateX(-50%);" />
+        <canvas id='myCanvas' width='300' height='300'>
+            Canvas not supported, use another browser.
+        </canvas>
+
+    </div>
+
+    <button onClick="addSegment();">Add Segment</button>
+    <button onClick="deleteSegment();">Delete Segment</button>
+    <button onClick="rotateRoulette();">룰렛 돌리기</button>
+
+</body>
+<script>
+
+        let theWheel = null;
+
+        function createRoulette() {
+
+            console.log("createRoultelette !");
+            
+            theWheel = new Winwheel({
+                'canvasId': 'myCanvas',
+                'numSegments': 8,
+                'segments':
+                    [
+                        { 'fillStyle': '#ffffff', 'text': 'Prize 1' },
+                        { 'fillStyle': '#ffffff', 'text': 'Prize 2' },
+                        { 'fillStyle': '#ffffff', 'text': 'Prize 3' },
+                        { 'fillStyle': '#ffffff', 'text': 'Prize 4' },
+                        { 'fillStyle': '#ffffff', 'text': 'Prize 5' },
+                        { 'fillStyle': '#ffffff', 'text': 'Prize 6' },
+                        { 'fillStyle': '#ffffff', 'text': 'Prize 7' },
+                        { 'fillStyle': '#ffffff', 'text': 'Prize 8' }
+                    ],
+                'lineWidth': 3,
+                'animation':
+                {
+                    'type': 'spinToStop', // 애니메이션 유형.
+                    'duration': 5, // 애니메이션에 걸리는 시간 (초)입니다.
+                    'spins': 8 // 휠이 수행해야하는 완전한 360도 회전 수입니다.
+                    ,
+                    // Remember to do something after the animation has finished specify callback function.
+                    'callbackFinished': 'alertPrize()'
+                }
+            });
+        };
+
+        // 룰렛 생성
+        createRoulette( );
+
+        // segmanet 추가
+        function addSegment() {
+
+            let newSegment = theWheel.addSegment(); // Add segment
+
+            newSegment.text = "Hello World";        // Set text and fillStyle using returned
+            newSegment.fillStyle = "green";         // pointer to the segment object.
+
+            theWheel.draw();                        // Render changes.
+        };
+
+        // segment 삭제
+        function deleteSegment() {
+            theWheel.deleteSegment();
+            theWheel.draw();
+        }
+
+        // rotate
+        function rotateRoulette() {
+            createRoulette( );
+            theWheel.startAnimation();
+        };
+
+        // This function called after the spin animation has stopped.
+        function alertPrize() {
+            console.log('!!');
+            // Call getIndicatedSegment() function to return pointer to the segment pointed to on wheel.
+            let winningSegment = theWheel.getIndicatedSegment();
+
+            // Basic alert of the segment text which is the prize name.
+            alert("You have won " + winningSegment.text + "!");
+        };
+
+</script>
+
 </html>
