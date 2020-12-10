@@ -46,75 +46,98 @@
 </body>
 <script>
 
-        let theWheel = null;
+    let winningData = [ ];
 
-        function createRoulette() {
+    setWinningData();
 
-            console.log("createRoultelette !");
-            
-            theWheel = new Winwheel({
-                'canvasId': 'myCanvas',
-                'numSegments': 8,
-                'segments':
-                    [
-                        { 'fillStyle': '#ffffff', 'text': 'Prize 1' },
-                        { 'fillStyle': '#ffffff', 'text': 'Prize 2' },
-                        { 'fillStyle': '#ffffff', 'text': 'Prize 3' },
-                        { 'fillStyle': '#ffffff', 'text': 'Prize 4' },
-                        { 'fillStyle': '#ffffff', 'text': 'Prize 5' },
-                        { 'fillStyle': '#ffffff', 'text': 'Prize 6' },
-                        { 'fillStyle': '#ffffff', 'text': 'Prize 7' },
-                        { 'fillStyle': '#ffffff', 'text': 'Prize 8' }
-                    ],
-                'lineWidth': 3,
-                'animation':
-                {
-                    'type': 'spinToStop', // 애니메이션 유형.
-                    'duration': 5, // 애니메이션에 걸리는 시간 (초)입니다.
-                    'spins': 8 // 휠이 수행해야하는 완전한 360도 회전 수입니다.
-                    ,
-                    // Remember to do something after the animation has finished specify callback function.
-                    'callbackFinished': 'alertPrize()'
-                }
-            });
+    let joinMemberCount=8;
+    let theWheel = null;
+
+    // 룰렛 생성
+    createRoulette();
+
+    function createRoulette() {
+
+        console.log("createRoultelette !");
+
+        theWheel = new Winwheel({
+            'canvasId': 'myCanvas',
+            'numSegments': winningData.length,
+            'textOrientation': 'horizontal',
+            'textDirection': 'reversed',
+            'segments': winningData,
+            'lineWidth': 3,
+            'animation':
+            {
+                'type': 'spinToStop', // 애니메이션 유형.
+                'duration': 5, // 애니메이션에 걸리는 시간 (초)입니다.
+                //'spins': 8 // 휠이 수행해야하는 완전한 360도 회전 수입니다.
+                
+                // Remember to do something after the animation has finished specify callback function.
+                'callbackFinished': 'alertPrize()'
+            }
+        });
+    };
+
+    // segmanet 추가
+    function addSegment() {
+
+        let newSegment = theWheel.addSegment(); // Add segment
+
+        newSegment.text = "Hello World";        // Set text and fillStyle using returned
+        newSegment.fillStyle = "#ffffff";         // pointer to the segment object.
+
+        let winningInData = { };
+        winningInData.text=newSegment.text;
+        winningInData.fillStyle=newSegment.fillStyle
+        winningData.push(winningInData);
+
+        theWheel.draw();                        // Render changes.
+    };
+
+    // segment 삭제 ( 가장 마지막 룰렛 삭제 )
+    function deleteSegment() {
+
+        for(var i=0; i<winningData.length; i++) {
+            if(winningData[i].text==="Hello World") {
+                winningData.splice(i, 1);
+                theWheel.deleteSegment(i + 1);
+                theWheel.draw();
+                return;
+            };
         };
+    }
 
-        // 룰렛 생성
-        createRoulette( );
+    // rotate
+    function rotateRoulette() {
+        createRoulette();
+        theWheel.startAnimation();
+    };
 
-        // segmanet 추가
-        function addSegment() {
+    // This function called after the spin animation has stopped.
+    function alertPrize() {
+        console.log('!!');
+        // Call getIndicatedSegment() function to return pointer to the segment pointed to on wheel.
+        let winningSegment = theWheel.getIndicatedSegment();
+        let winningSegmentNumber = theWheel.getIndicatedSegmentNumber(); // 1부터 시작
+        theWheel.segments[winningSegmentNumber].fillStyle = 'yellow';
+        theWheel.draw();
 
-            let newSegment = theWheel.addSegment(); // Add segment
+        // Basic alert of the segment text which is the prize name.
+        alert("You have won " + winningSegment.text + "!");    
+        setTimeout(function( ) {
+            winningData.splice(winningSegmentNumber-1, 1);
+            createRoulette();
+        }, 2000);
+    };
 
-            newSegment.text = "Hello World";        // Set text and fillStyle using returned
-            newSegment.fillStyle = "green";         // pointer to the segment object.
-
-            theWheel.draw();                        // Render changes.
+    function setWinningData( ) {
+        for(var i=0; i<8; i++) {
+            winningData[i] = { };
+            winningData[i].text=`Prize ${i}`;
+            winningData[i].fillStyle="#ffffff";
         };
-
-        // segment 삭제
-        function deleteSegment() {
-            theWheel.deleteSegment();
-            theWheel.draw();
-        }
-
-        // rotate
-        function rotateRoulette() {
-            createRoulette( );
-            theWheel.startAnimation();
-        };
-
-        // This function called after the spin animation has stopped.
-        function alertPrize() {
-            console.log('!!');
-            // Call getIndicatedSegment() function to return pointer to the segment pointed to on wheel.
-            let winningSegment = theWheel.getIndicatedSegment();
-
-            // Basic alert of the segment text which is the prize name.
-            alert("You have won " + winningSegment.text + "!");
-        };
-
+    }
 </script>
 
 </html>
